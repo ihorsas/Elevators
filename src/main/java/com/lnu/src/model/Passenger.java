@@ -32,8 +32,14 @@ public class Passenger {
     return to > from;
   }
 
+  @Override
   public String toString() {
-    return "To the floor " + to;
+    final StringBuffer sb = new StringBuffer("Passenger{");
+    sb.append("from=").append(from);
+    sb.append(", to=").append(to);
+    sb.append(", hashcode=").append(hashCode());
+    sb.append('}');
+    return sb.toString();
   }
 
   @Override

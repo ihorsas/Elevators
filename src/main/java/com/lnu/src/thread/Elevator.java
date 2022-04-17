@@ -1,4 +1,10 @@
-package com.lnu.src;
+package com.lnu.src.thread;
+
+import static com.lnu.src.constant.Constants.DEFAULT_ELEVATOR_CAPACITY;
+import static com.lnu.src.constant.Constants.DEFAULT_ELEVATOR_SPEED;
+import static com.lnu.src.constant.Constants.DEFAULT_ELEVATOR_WAITING_TIME;
+import static com.lnu.src.constant.Constants.DEFAULT_PASSENGER_ENTRY_EXIT_TIME;
+import static com.lnu.src.constant.Constants.ZERO_FLOOR;
 
 import com.lnu.src.model.Floor;
 import com.lnu.src.model.Passenger;
@@ -14,27 +20,27 @@ import java.util.Objects;
 public class Elevator extends Thread {
 
   private static final Logger LOGGER = LogManager.getLogger();
-  private final int maxCapacity = 8; //Maximum number of people
+  private final int maxCapacity = DEFAULT_ELEVATOR_CAPACITY; //Maximum number of people
   private final List<Floor> floors; //List with floors
   private final List<Passenger> passengersLift = new ArrayList<>(); //Passenger list in the elevator
-  private final int time; //Time for both travel and passenger entry / exit
+  private int speed = DEFAULT_ELEVATOR_SPEED; //Time for elevator to get from one floor to another
+  private int entryExitTime = DEFAULT_PASSENGER_ENTRY_EXIT_TIME; //Time for passenger entry / exit
   private final ElevatorStrategy strategy;
-  private int currentFloor = 0; //The current floor
-  private int retryTimes; //Times elevator goes up or down
+  private int currentFloor = ZERO_FLOOR; //The current floor
   private boolean goingUp = true; //Driving direction
 
-  Elevator(List<Floor> floors, ElevatorStrategy strategy, int time, int retryTimes) {
+  public Elevator(List<Floor> floors, ElevatorStrategy strategy) {
     this.floors = floors;
     this.strategy = strategy;
-    this.time = time;
-    this.retryTimes = retryTimes;
   }
 
   public void run() {
     try {
-      while (retryTimes >= 0) {
-        //Writing a state
-        LOGGER.info(this.toString() + "\n");
+      while (true) {
+        //
+        while (floors.isEmpty() && passengersLift.isEmpty() && currentFloor == 0) {
+          Thread.sleep(DEFAULT_ELEVATOR_WAITING_TIME);
+        }
 
         boolean keepGoing = strategy.keepGoing(passengersLift, currentFloor);
         if (!keepGoing) {
@@ -46,12 +52,11 @@ public class Elevator extends Thread {
         //Going up/down by 1 floor
         if (goingUp) {
           currentFloor++;
-          Thread.sleep(time);
+          Thread.sleep(speed);
         } else {
           currentFloor--;
-          Thread.sleep(time);
+          Thread.sleep(speed);
         }
-        retryTimes--;
       }
 
     } catch (InterruptedException e) {
@@ -106,7 +111,7 @@ public class Elevator extends Thread {
         // must be called before you can call i.remove()
         if (i.next().getTo() == currentFloor) {
           i.remove();
-          Thread.sleep(time);
+          Thread.sleep(entryExitTime);
         }
       }
     }
@@ -142,7 +147,7 @@ public class Elevator extends Thread {
         passengersLift.add(passenger); //Adding a passenger
       }
       LOGGER.info("New user has entered in this lift");
-      Thread.sleep(time);
+      Thread.sleep(entryExitTime);
     }
   }
 
@@ -156,13 +161,43 @@ public class Elevator extends Thread {
       if (!Objects.isNull(passenger)) {
         passengersLift.add(passenger);
       }
-      Thread.sleep(time);
+      Thread.sleep(entryExitTime);
     }
   }
 
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
+    Elevator elevator = (Elevator) o;
+    return maxCapacity == elevator.maxCapacity &&
+        speed == elevator.speed &&
+        entryExitTime == elevator.entryExitTime &&
+        currentFloor == elevator.currentFloor &&
+        goingUp == elevator.goingUp &&
+        Objects.equals(floors, elevator.floors) &&
+        Objects.equals(passengersLift, elevator.passengersLift) &&
+        Objects.equals(strategy, elevator.strategy);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(maxCapacity, speed, entryExitTime, strategy);
+  }
+
+  @Override
   public String toString() {
-    return "Elevator is on the floor " + currentFloor + ((goingUp) ? ", going up."
-        : ", going down.") +
-        " Passengers: " + passengersLift;
+    final StringBuffer sb = new StringBuffer("Elevator{");
+    sb.append("hashcode=").append(hashCode());
+    sb.append(", currentFloor=").append(currentFloor);
+    sb.append(", goingUp=").append(goingUp);
+    sb.append(", passengersLift=").append(passengersLift);
+    sb.append(", speed=").append(speed);
+    sb.append('}');
+    return sb.toString();
   }
 }
