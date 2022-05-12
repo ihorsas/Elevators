@@ -1,6 +1,7 @@
 package com.lnu.src.manager;
 
 import com.lnu.src.model.Floor;
+import com.lnu.src.strategy.ElevatorContext;
 import com.lnu.src.strategy.ElevatorStrategy;
 import com.lnu.src.strategy.StopsOnDemandStrategy;
 import com.lnu.src.strategy.StopsOnEveryFloorStrategy;
@@ -13,18 +14,20 @@ public class ElevatorManager {
 
   private ElevatorStrategy stopsOnDemandStrategy;
   private ElevatorStrategy stopsOnEveryFloorStrategy;
-  private final List<Floor> floors;
+  private final ElevatorContext context;
 
   public ElevatorManager(List<Floor> floors) {
-    this.floors = floors;
+    this.context = new ElevatorContext(floors);
   }
 
   public Elevator createStopsOnDemandElevator() {
-    return new Elevator(floors, getStopsOnDemandStrategy());
+    context.setStrategy(getStopsOnDemandStrategy());
+    return context.createElevator();
   }
 
   public Elevator createStopsOnEveryFloorElevator() {
-    return new Elevator(floors, getStopsOnEveryFloorStrategy());
+    context.setStrategy(getStopsOnEveryFloorStrategy());
+    return context.createElevator();
   }
 
   private ElevatorStrategy getStopsOnDemandStrategy() {
