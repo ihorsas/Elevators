@@ -7,9 +7,9 @@ public class Passenger {
   private int from;
   private int to;
 
-  public Passenger(int from, int to) {
-    this.from = from;
-    this.to = to;
+  private Passenger(Builder builder) {
+    this.from = builder.from;
+    this.to = builder.to;
   }
 
   public int getFrom() {
@@ -58,5 +58,28 @@ public class Passenger {
   @Override
   public int hashCode() {
     return Objects.hash(from, to);
+  }
+
+  public static Builder builder() {
+    return new Builder();
+  }
+
+  public static class Builder {
+    private int from;
+    private int to;
+
+    public Builder from(int from) {
+      this.from = from;
+      return this;
+    }
+
+    public Builder to(int to) {
+      this.to = to;
+      return this;
+    }
+
+    public Passenger build() {
+      return new Passenger(this);
+    }
   }
 }

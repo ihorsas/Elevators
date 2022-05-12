@@ -29,7 +29,10 @@ public class PassengerRandomizer extends Thread {
     while (from == to) {
       to = ThreadLocalRandom.current().nextInt(floors.size());
     }
-    Passenger passenger = new Passenger(from, to);
+    Passenger passenger = Passenger.builder()
+        .from(from)
+        .to(to)
+        .build();
     floors.get(from).addPassenger(passenger);
     LOGGER.info("New passenger spawned on the floor floor " + from + ": " + passenger + "\n");
   }

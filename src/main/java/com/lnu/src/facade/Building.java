@@ -1,4 +1,4 @@
-package com.lnu.src;
+package com.lnu.src.facade;
 
 
 import static com.lnu.src.constant.Constants.DEFAULT_FLOORS_AMOUNT;
@@ -22,7 +22,7 @@ public class Building {
 
   private static final Logger LOGGER = LogManager.getLogger();
 
-  public static void main(String[] args) {
+  public static void createBuilding() {
     try {
       List<Floor> floors = createFloors(DEFAULT_FLOORS_AMOUNT);
       LOGGER.info("Floors created");
