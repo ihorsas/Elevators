@@ -4,7 +4,7 @@ Elevators is a university group project in Java using design templates, multithr
 
 ## UML diagram
 
-![alt text](https://github.com/ihorsas/Elevators/blob/victoriashining21-patch-1/photo_2022-04-22_12-46-58.jpg)
+![Elevators](https://github.com/ihorsas/Elevators/Elevators.png)
 The initial version. Possible changes in the future.
 
 ## Team
